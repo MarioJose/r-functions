@@ -1,8 +1,3 @@
-# Function to calculate phytosociological table
-# Autor: Mario José Marques-Azevedo
-# email: gnumario [at] gmail [dot] com
-# Licence: GPLv3
-
 phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE, nmDead = "Dead"){
   # x must be data frame with: plot, family, specie, diameter, (height).
   #   It must be in this order, but not necessarily with this names. Height is optional
