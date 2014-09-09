@@ -6,7 +6,7 @@
 
 `phyto(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL, incDead = TRUE, nmDead = "Dead")`
 
-* `x`:	Data frame with the follow data: plot, family, specie, diameter or circunference, (height). Height data is optional. It must be in this order, but not necessarily with this names.
+* `x`:	Data frame with the follow data: plot, family, specie, diameter or circumference, (height). Height data is optional. It must be in this order, but not necessarily with this names.
 
 * `filter`:	Numeric value informing witch filter to use: 1 = plot; 2 = family; 3 = specie. 
 
@@ -14,11 +14,11 @@
 
 * `criteria`: Numeric value informing including criteria to diameter: 1 = plot; 2 = family; 3 = specie"
 
-* `measure`: Character value informing which measure was used: "d" = diameter; "c" = circunferente.
+* `measure`: Character value informing which measure was used: "d" = diameter; "c" = circumference.
 
 * `incDead`: TRUE/FALSE value to inform if include or not dead individual to table.
 
-* `nmDead`: Characteres informing identification of dead individual in data.
+* `nmDead`: Characters informing identification of dead individual in data.
 
 **Details:** Details: Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m^2^) and dominance (m^2^/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data.
 
