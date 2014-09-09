@@ -22,6 +22,46 @@
 
 **Details:** Details: Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m^2^) and dominance (m^2^/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data.
 
+**Values: ** Data frame with follow columns:
+
+If filter by "plot":
+
+* `plot`: Plot number.
+
+* `nInd`: Number of individuals.
+
+* `nFamilies`: Number of families.
+
+* `nSpecies`: Number of species.
+
+If filter by "family" or "specie"
+
+* `family`: Families names (if filter by family).
+
+* `specie`: Species names (if filter by specie).
+
+* `nInd`: Number of individuals.
+
+* `AbsDens`: Absolute Density.
+
+* `RelDens`: Relative Density (percentage).
+
+* `nPlot`: Number of plot ocurrence.
+
+* `AbsFreq`: Absolute Frequency.
+
+* `RelFreq`: Relative Frequency (percentage).
+
+* `tBasalArea`: Total Basal Area.
+
+* `AbsDom`: Absolute Dominance.
+
+* `RelDom`: Relative Dominance (percentage).
+
+* `IVI`: Importance Value Index.
+
+* `CVI`: Cover Value Index.
+
 ### Licence
 
 Copyright (c) 2014 Mario José Marques-Azevedo
