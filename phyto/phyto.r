@@ -89,7 +89,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   
   # Remove dead
   if(!incDead){
-    x[-grep(nmDead , x[ ,3]), ]
+    x <- x[-grep(nmDead , x[ ,3]), ]
   }
   
   out <- aggregate(list(nInd = x[ ,3]), by = list(c1 = x[ ,filter]), FUN = length)
@@ -109,20 +109,20 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   
   if(filter != 1){
     out[ ,"AbsDens"] <- out$nInd / area
-    out[ ,"RelDens"] <- out$nInd / sum(out$nInd)
+    out[ ,"RelDens"] <- (out$nInd / sum(out$nInd)) * 100
     
-    out[ ,"Freq"] <- aggregate(tmp[ ,1], by = list(tmp[ ,1]), FUN = length)$x
-    out[ ,"AbsFreq"] <- out[ ,"Freq"] / length(unique(x[ ,1]))
-    out[ ,"RelFreq"] <- out$AbsFreq / sum(out$AbsFreq)
+    out[ ,"nPlot"] <- aggregate(tmp[ ,1], by = list(tmp[ ,1]), FUN = length)$x
+    out[ ,"AbsFreq"] <- (out[ ,"nPlot"] / length(unique(x[ ,1]))) * 100
+    out[ ,"RelFreq"] <- (out$AbsFreq / sum(out$AbsFreq)) * 100
     
     # Convert diameter measure from centimeters to meters
     x[ ,4] <- x[ ,4] / 100
     out[ ,"tBasalArea"] <- aggregate(x[ ,4], by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
     out[ ,"AbsDom"] <-  out[ ,"tBasalArea"] / area
-    out[ ,"RelDom"] <- out[ ,"tBasalArea"] / sum(out[ ,"tBasalArea"])
+    out[ ,"RelDom"] <- (out[ ,"tBasalArea"] / sum(out[ ,"tBasalArea"])) * 100
     
     out[ ,"IVI"] <- out$RelDens + out$RelFreq + out$RelDom
-    out[ ,"IVC"] <- out$RelDens + out$RelDom
+    out[ ,"CVI"] <- out$RelDens + out$RelDom
   }
   
   if(length(x[1, ]) == 5){
