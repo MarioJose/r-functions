@@ -1,4 +1,4 @@
-phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE, nmDead = "Dead"){
+phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL, incDead = TRUE, nmDead = "Dead"){
   # x must be data frame with: plot, family, specie, diameter, (height).
   #   It must be in this order, but not necessarily with this names. Height is optional
   
@@ -25,6 +25,14 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE
   if(is.null(criteria)){
     stop("You must inform the diameter criteria for individual inclusion")
   }
+
+  if(is.null(measure)){
+    stop("You must inform the measure: \"d\" = diameter; \"c\" = circunference")
+  } else {
+    if(!(measure %in% c("d","c"))){
+      stop("You must inform one of the follow option to measure: \"d\" = diameter; \"c\"c = circunferente")
+    }
+  }
   
   # Functions
   basalArea <- function(x){
@@ -33,7 +41,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE
   
   # Split multiple diameter or height and return diameter of total basal area of each
   #   individual or mean height of each individual.
-  splitMultiple <- function(x, d){
+  splitMultiple <- function(x, m){
     out <- c()
     for(i in 1:length(x)){
       if(!is.numeric(x[i])){
@@ -41,10 +49,15 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE
       } else {
         tmp <- x[i]
       }
-      if(d){
+      if(m == "d"){
         # Return diameter of total basal area
         out[i] <- sqrt(4 * sum((pi * (tmp) ^ 2) /4) / pi)
-      } else {
+      }
+      if(m == "c"){
+        # Convert circunference and return diameter of total basal area
+        out[i] <- sqrt(4 * sum((tmp ^ 2) / (4 * pi)) / pi)
+      }
+      if(m == "h") {
         out[i] <- mean(tmp)
       }
     }
@@ -56,10 +69,16 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, incDead = TRUE
   
   # Standardize diameter. Split multiples measures and return diameter 
   #   of total basal area to individual
-  x[ ,4] <- splitMultiple(x[ ,4], d = TRUE)
+  if(is.character(x[ ,4]) | is.factor(x[ ,4])){
+    x[ ,4] <- splitMultiple(as.character(x[ ,4]), m = measure)
+  }
   
   # Standardize height. Split multiples measures and return mean of height to individual
-  x[ ,5] <- splitMultiple(x[ ,5], d = FALSE)
+  if(length(x[1, ]) == 5){
+    if(is.character(x[ ,5]) | is.factor(x[ ,5])){
+      x[ ,5] <- splitMultiple(as.character(x[ ,5]), m = "h")
+    }
+  }
   
   # Filter by inclusion criteria
   x <- x[x[ ,4] >= criteria, ]
