@@ -20,9 +20,9 @@
 
 * `nmDead`: Characters informing identification of dead individual in data.
 
-**Details:** Details: Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m^2^) and dominance (m^2^/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data.
+**Details:** Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m^2^) and dominance (m^2^/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data.
 
-**Values: ** Data frame with follow columns:
+**Values:** Data frame with follow columns:
 
 If filter by "plot":
 
