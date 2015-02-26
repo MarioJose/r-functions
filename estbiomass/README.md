@@ -8,11 +8,11 @@
 
 * `ro`:  Numeric value or numeric vector with wood density of individual specie.
 
-* `h`:	Numeric value or numeric vector with hight, in meters, of individual.
+* `h`: Numeric value or numeric vector with height, in meters, of individual.
 
-* `dhb`:	Numeric value or numeric vector with diameter at hight breast, in centimetres, of individual.
+* `dhb`: Numeric value or numeric vector with diameter at height breast, in centimetres, of individual.
 
-* `chb`:  Numeric value or numeric vector with circumference at hight breast, in centimetres, of individual.
+* `chb`:  Numeric value or numeric vector with circumference at height breast, in centimetres, of individual.
 
 * `type`: Character value informing with expression to use to estimate biomass: "dry", "moist", "mangrove" or "wet".
 
