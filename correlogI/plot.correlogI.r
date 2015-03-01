@@ -11,7 +11,7 @@ plot.correlogI <- function(x, expected = TRUE, label.dist = FALSE, significance 
   do.call(plot, c(list(x = dcl, y = x$result$I,
                        ylim = c(-1, 1), xlim = c(-0.2, 0.2) + range(dcl),
                        type = "n", bty = "n", xaxt = "n",
-                       ylab = "Moran I"), dots))
+                       ylab = "Moran's I"), dots))
   axis(side = 1, at = dcl, labels = dcl)
   
   if(expected == TRUE) abline(h = x$EI, col = "black", lty = 2)
