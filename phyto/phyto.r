@@ -5,16 +5,16 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   if(!is.data.frame(x)){
     stop("'x' must be a data frame")
   } else {
-    if(length(x[1, ]) < 4 | length(x[1, ]) > 5){
+    if(dim(x)[2] < 4 | dim(x)[2] > 5){
       stop("Your data frame must have at least 4 columns with the follow data at the same order: 'plot', 'family', 'specie', 'diameter'.The column 'height' is optional")
     }
   }
   
   if(is.null(filter)){
-    stop("You must inform the filter to summarization: 1 = plot; 2 = family; 3 = genus, 4 = specie")
+    stop("You must inform the filter to summarization: 'plot', 'family', 'genus', 'specie'")
   } else {
-    if(!(filter %in% 1:4)){
-      stop("You must inform one of the follow option to filter: 1 = plot; 2 = family; 3 = genus, 4 = specie")
+    if(!(filter %in% c("plot", "family", "genus", "specie"))){
+      stop("You must inform one of the follow option to filter: 'plot', 'family', 'genus', 'specie'")
     }
   }
   
@@ -35,19 +35,19 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   }
   
   # Functions
-  basalArea <- function(x){
-    return((pi * (x) ^ 2) / 4)
+  basalArea <- function(v){
+    return((pi * (v) ^ 2) / 4)
   }
   
   # Split multiple diameter or height and return diameter of total basal area of each
   #   individual or mean height of each individual.
-  splitMultiple <- function(x, m){
+  splitMultiple <- function(dt, m){
     out <- c()
-    for(i in 1:length(x)){
-      if(!is.numeric(x[i])){
-        tmp <- as.numeric(unlist(strsplit(x[i] , "+", TRUE)))
+    for(i in 1:length(dt)){
+      if(!is.numeric(dt[i])){
+        tmp <- as.numeric(unlist(strsplit(dt[i] , "+", TRUE)))
       } else {
-        tmp <- x[i]
+        tmp <- dt[i]
       }
       if(m == "d"){
         # Return diameter of total basal area
@@ -64,79 +64,88 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     return(out)
   }
   
+  # Columns names
+  colnames(x) <- c("plot", "family", "specie", "diameter", "height")[1:dim(x)[2]]
+  
   # Create column with genus
-  for(i in 1:dim(x)[1]){
-    x$genus[i] <- strsplit(x$specie[i], " ")[[1]][1]
-  }
-  rm(i)
+  x$genus <- sapply(strsplit(x$specie, " "), function(x) x[1])
   
   # Order data frame
-  x <- x[ , c(1, 2, length(x[1, ]), 3:(length(x[1, ]) - 1))]
-  
-  # filter: 1=plot, 2=family, 3=genus, 4=specie
-  idxName <- c("plot", "family", "genus", "specie")
+  x <- x[, c(1:2, dim(x)[2], 3:(dim(x)[2] - 1))] 
   
   # Standardize diameter. Split multiples measures and return diameter 
   #   of total basal area to individual
-  if(is.character(x[ ,5]) | is.factor(x[ ,5])){
-    x[ ,5] <- splitMultiple(as.character(x[ ,5]), m = measure)
+  if(is.character(x$diameter) | is.factor(x$diameter)){
+    x$diameter <- splitMultiple(as.character(x$diameter), m = measure)
   }
   
   # Standardize height. Split multiples measures and return mean of height to individual
-  if(length(x[1, ]) == 6){
-    if(is.character(x[ ,6]) | is.factor(x[ ,6])){
-      x[ ,6] <- splitMultiple(as.character(x[ ,6]), m = "h")
+  if(dim(x)[2] == 6){
+    if(is.character(x$height) | is.factor(x$height)){
+      x$height <- splitMultiple(as.character(x$height), m = "h")
     }
   }
   
   # Filter by inclusion criteria
-  x <- x[x[ ,5] >= criteria, ]
+  x <- x[x$diameter >= criteria, ]
   
-  if(length(x[ ,1]) < 1){
+  if(dim(x)[1] < 1){
     stop("Your criteria removed all individuals")
   }
   
   # Remove dead
   if(!incDead){
-    x <- x[-grep(nmDead , x[ ,4]), ]
+    x <- x[-grep(nmDead , x$specie), ]
   }
   
   # Create output data frame
-  out <- aggregate(list(nInd = x[ ,4]), by = list(c1 = x[ ,filter]), FUN = length)
-  colnames(out) <- c(idxName[filter], "nInd")
+  out <- aggregate(list(nInd = x$specie), by = list(c1 = x[ ,filter]), FUN = length)
+  colnames(out) <- c(filter, "nInd")
   
-  tmp <- aggregate(list(nInd = x[ ,filter]), by = list(c1 = x[ ,filter], plot=x[ ,1]), FUN = length)
-  colnames(tmp) <- c(idxName[filter], "plot", "nInd")
+  # Add families
+  if(filter %in% c("genus", "specie")){
+    tf <- aggregate(list(nInd = x[ ,filter]), by = list(family = x$family, filter = x[ ,filter]), FUN = length)
+    out$family <- tf$family[match(out[ ,filter], tf$filter)]
+    out <- out[ ,c("family", filter, "nInd")]
+  }
+  
+  if(filter == "plot"){
+    # Number of families per plot
+    out[ ,"nFamilies"] <- aggregate(x$family, by = list(x$plot), FUN = function(x){length(unique(x))})$x
+    
+    # Number of genera per plot
+    out[ ,"nGenera"] <- aggregate(x$genus, by = list(x$plot), FUN = function(x){length(unique(x))})$x
+    
+    # Number of species per plot
+    out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$plot), FUN = function(x){length(unique(x))})$x
+  }
+  
+  if(filter == "family"){
+    # Number of genera per family
+    out[ ,"nGenera"] <- aggregate(x$genus, by = list(x$family), FUN = function(x){length(unique(x))})$x
+    
+    # Number of species per family
+    out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$family), FUN = function(x){length(unique(x))})$x
+  }
 
-  # Filter to plot
-  if(filter == 1){
-    out[ ,"nFamilies"] <- aggregate(x[ ,2], by = list(x[ ,1]), FUN = function(x){length(unique(x))})$x
-    out[ ,"nGenera"] <- aggregate(x[ ,3], by = list(x[ ,1]), FUN = function(x){length(unique(x))})$x
-    out[ ,"nSpecies"] <- aggregate(x[ ,4], by = list(x[ ,1]), FUN = function(x){length(unique(x))})$x
+  if(filter == "genus"){
+    # Number of species per genus
+    out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$genus), FUN = function(x){length(unique(x))})$x
   }
   
-  # Filter to family
-  if(filter == 2){
-    out[ ,"nGenera"] <- aggregate(x[ ,3], by = list(x[ ,2]), FUN = function(x){length(unique(x))})$x
-    out[ ,"nSpecies"] <- aggregate(x[ ,4], by = list(x[ ,2]), FUN = function(x){length(unique(x))})$x
-  }
-
-  # Filter to genus
-  if(filter == 3){
-    out[ ,"nSpecies"] <- aggregate(x[ ,4], by = list(x[ ,3]), FUN = function(x){length(unique(x))})$x
-  }
-  
-  if(filter != 1){
+  if(filter != "plot"){
     out[ ,"AbsDens"] <- out$nInd / area
     out[ ,"RelDens"] <- (out$nInd / sum(out$nInd)) * 100
     
-    out[ ,"nPlot"] <- aggregate(tmp[ ,1], by = list(tmp[ ,1]), FUN = length)$x
-    out[ ,"AbsFreq"] <- (out[ ,"nPlot"] / length(unique(x[ ,1]))) * 100
+    # Species or genera by plot
+    tmp <- aggregate(list(nInd = x[ ,filter]), by = list(filter = x[ ,filter], plot=x$plot), FUN = length)
+    out[ ,"nPlot"] <- aggregate(tmp$filter, by = list(tmp$filter), FUN = length)$x
+    out[ ,"AbsFreq"] <- (out[ ,"nPlot"] / length(unique(x$plot))) * 100
     out[ ,"RelFreq"] <- (out$AbsFreq / sum(out$AbsFreq)) * 100
     
     # Convert diameter measure from centimeters to meters
-    x[ ,5] <- x[ ,5] / 100
-    out[ ,"tBasalArea"] <- aggregate(x[ ,5], by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
+    x$diameter <- x$diameter / 100
+    out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
     out[ ,"AbsDom"] <-  out[ ,"tBasalArea"] / area
     out[ ,"RelDom"] <- (out[ ,"tBasalArea"] / sum(out[ ,"tBasalArea"])) * 100
     
