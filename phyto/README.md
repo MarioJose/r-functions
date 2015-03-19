@@ -8,7 +8,7 @@
 
 * `x`: Data frame with the follow data: plot, family, specie, diameter or circumference, (height). Height data is optional. It must be in this order, but not necessarily with this names.
 
-* `filter`: Numeric value informing witch filter to use: 1 = plot; 2 = family; 3 = genus; 4 = specie. 
+* `filter`: Numeric value informing witch filter to use: "plot", "family", "genus", "specie". 
 
 * `area`: Numeric value informing total area of sampling.
 
@@ -38,9 +38,9 @@ If filter by "plot":
 
 If filter by "family" , "genus" or "specie"
 
-* `family`: Families names (if filter by family).
+* `family`: Families names (if filter by family, genus or specie).
 
-* `genus`: Genus names (if filter by specie).
+* `genus`: Genus names (if filter by genus).
 
 * `specie`: Species names (if filter by specie).
 
@@ -54,7 +54,7 @@ If filter by "family" , "genus" or "specie"
 
 * `RelDens`: Relative Density (percentage).
 
-* `nPlot`: Number of plot ocurrence.
+* `nPlot`: Number of plot occurrence.
 
 * `AbsFreq`: Absolute Frequency.
 
