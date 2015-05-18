@@ -6,7 +6,17 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     stop("'x' must be a data frame")
   } else {
     if(dim(x)[2] < 4 | dim(x)[2] > 5){
-      stop("Your data frame must have at least 4 columns with the follow data at the same order: 'plot', 'family', 'specie', 'diameter'.The column 'height' is optional")
+      stop("Your data frame must have at least 4 columns with the follow data at the same order: 'plot', 'family', 'specie', 'diameter'. The column 'height' is optional")
+    }
+  }
+  
+  if(!is.numeric(x[ ,4])){
+    stop("'diameter' column must be numeric")
+  }
+  
+  if(length(x[1, ]) == 5){
+    if(!is.numeric(x[ ,5])){
+      stop("'height' column must be numeric")
     }
   }
   
@@ -68,7 +78,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   colnames(x) <- c("plot", "family", "specie", "diameter", "height")[1:dim(x)[2]]
   
   # Create column with genus
-  x$genus <- sapply(strsplit(x$specie, " "), function(x) x[1])
+  x$genus <- sapply(strsplit(as.character(x$specie), " "), function(x) x[1])
   
   # Order data frame
   x <- x[, c(1:2, dim(x)[2], 3:(dim(x)[2] - 1))] 
