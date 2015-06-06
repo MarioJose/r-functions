@@ -31,12 +31,9 @@ set.seed(42)
 # Creating data
 dt <- data.frame(x=c(rnorm(100, 5, 2), rnorm(100, 10, 3)), site=c(rep("BD", 100), rep("IS", 100)), sp=sample(paste("sp", 1:20, sep=""), 200, replace = TRUE, prob = 20:1))
 
-# Default plot
-plot.scatter.box(x=dt$x, g1=dt$site, g2=dt$sp)
-
-# Changing default color of points and mean
-plot.scatter.box(x=dt$x, g1=dt$site, g2=dt$sp, pcol="blue", mcol="black")
-
 # Highlighting 'sp1' and 'sp14'
-plot.scatter.box(x=dt$x, g1=dt$site, g2=dt$sp, hlg = c("sp1", "sp14"), hlc = c("blue", "red"))
+plot.scatter.box(x=dt$x, g1=dt$site, g2=dt$sp, hlg = c("sp1", "sp14"), hlc = c("blue", "green"))
 ```
+<center>
+  <img src="scatter.box.png" alt="Scatter-box" />
+</center>
