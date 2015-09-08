@@ -10,16 +10,6 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     }
   }
   
-  if(!is.numeric(x[ ,4])){
-    stop("'diameter' column must be numeric")
-  }
-  
-  if(length(x[1, ]) == 5){
-    if(!is.numeric(x[ ,5])){
-      stop("'height' column must be numeric")
-    }
-  }
-  
   if(is.null(filter)){
     stop("You must inform the filter to summarization: 'plot', 'family', 'genus', 'specie'")
   } else {
