@@ -20,7 +20,7 @@
 
 * `nmDead`: Characters informing identification of dead individual in data.
 
-**Details:** Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m^2^) and dominance (m^2^/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data. Multiple diameters, circumferences or heights are allowed. Values must be delimited by "+" character. For diameters or circumferences, function split multiple values and return diameter of total basal area for each individual. For multiples heights, function return mean height of each individual.
+**Details:** Diameter must be in centimetres. Diameters will be converted to meters for usual measure of basal area (m<sup>2</sup>) and dominance (m<sup>2</sup>/ha). Usually, area is informed as hectare and height as meters. But, except for diameter, the output of parameters will be in the unit informed in data. Multiple diameters, circumferences or heights are allowed. Values must be delimited by "+" character. For diameters or circumferences, function split multiple values and return diameter of total basal area for each individual. For multiples heights, function return mean height of each individual.
 
 **Values:** Data frame with follow columns:
 
