@@ -50,6 +50,8 @@ If filter by "family" , "genus" or "specie"
 
 * `nSpecies`: Number of species (if filter by family or genus).
 
+* `tBasalArea`: Total Basal Area.
+
 * `AbsDens`: Absolute Density.
 
 * `RelDens`: Relative Density (percentage).
@@ -59,8 +61,6 @@ If filter by "family" , "genus" or "specie"
 * `AbsFreq`: Absolute Frequency.
 
 * `RelFreq`: Relative Frequency (percentage).
-
-* `tBasalArea`: Total Basal Area.
 
 * `AbsDom`: Absolute Dominance.
 
