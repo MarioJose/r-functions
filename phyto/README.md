@@ -36,6 +36,8 @@ If filter by "plot":
 
 * `nSpecies`: Number of species.
 
+* `tBasalArea`: Total Basal Area.
+
 If filter by "family" , "genus" or "specie"
 
 * `family`: Families names (if filter by family, genus or specie).
