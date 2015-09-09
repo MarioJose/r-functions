@@ -34,6 +34,11 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     }
   }
   
+  # Remove dead individuals (column 'specie')
+  if(!incDead){
+    x <- x[-grep(nmDead , x[ ,3]), ]
+  }
+  
   # Functions
   basalArea <- function(v){
     return((pi * (v) ^ 2) / 4)
@@ -93,11 +98,6 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     stop("Your criteria removed all individuals")
   }
   
-  # Remove dead
-  if(!incDead){
-    x <- x[-grep(nmDead , x$specie), ]
-  }
-  
   # Create output data frame
   out <- aggregate(list(nInd = x$specie), by = list(c1 = x[ ,filter]), FUN = length)
   colnames(out) <- c(filter, "nInd")
@@ -133,6 +133,10 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$genus), FUN = function(x){length(unique(x))})$x
   }
   
+  # Convert diameter measure from centimeters to meters
+  x$diameter <- x$diameter / 100
+  out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
+  
   if(filter != "plot"){
     out[ ,"AbsDens"] <- out$nInd / area
     out[ ,"RelDens"] <- (out$nInd / sum(out$nInd)) * 100
@@ -143,9 +147,6 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     out[ ,"AbsFreq"] <- (out[ ,"nPlot"] / length(unique(x$plot))) * 100
     out[ ,"RelFreq"] <- (out$AbsFreq / sum(out$AbsFreq)) * 100
     
-    # Convert diameter measure from centimeters to meters
-    x$diameter <- x$diameter / 100
-    out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
     out[ ,"AbsDom"] <-  out[ ,"tBasalArea"] / area
     out[ ,"RelDom"] <- (out[ ,"tBasalArea"] / sum(out[ ,"tBasalArea"])) * 100
     
