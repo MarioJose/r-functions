@@ -2,6 +2,9 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   # x must be data frame with: plot, family, specie, diameter, (height).
   #   It must be in this order, but not necessarily with this names. Height is optional
   
+  # Checking input
+  # ++++++++++++++
+  
   if(!is.data.frame(x)){
     stop("'x' must be a data frame")
   } else {
@@ -38,11 +41,10 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   if(!incDead){
     x <- x[-grep(nmDead , x[ ,3]), ]
   }
-  
+
+
   # Functions
-  basalArea <- function(v){
-    return((pi * (v) ^ 2) / 4)
-  }
+  # +++++++++
   
   # Split multiple diameter or height and return diameter of total basal area of each
   #   individual or mean height of each individual.
@@ -56,7 +58,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
       }
       if(m == "d"){
         # Return diameter of total basal area
-        out[i] <- sqrt(4 * sum((pi * (tmp) ^ 2) /4) / pi)
+        out[i] <- sqrt(4 * sum((pi * (tmp ^ 2)) / 4) / pi)
       }
       if(m == "c"){
         # Convert circunference and return diameter of total basal area
@@ -69,6 +71,10 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     return(out)
   }
   
+  
+  # Checking data
+  # +++++++++++++
+  
   # Columns names
   colnames(x) <- c("plot", "family", "specie", "diameter", "height")[1:dim(x)[2]]
   
@@ -78,10 +84,14 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   # Order data frame
   x <- x[, c(1:2, dim(x)[2], 3:(dim(x)[2] - 1))] 
   
-  # Standardize diameter. Split multiples measures and return diameter 
+  # Standardize measure to diameter. Split multiples measures and return diameter 
   #   of total basal area to individual
   if(is.character(x$diameter) | is.factor(x$diameter)){
     x$diameter <- splitMultiple(as.character(x$diameter), m = measure)
+  } else {
+    if(measure == "c"){
+      x$diameter <- x$diameter / pi
+    }
   }
   
   # Standardize height. Split multiples measures and return mean of height to individual
@@ -97,6 +107,10 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   if(dim(x)[1] < 1){
     stop("Your criteria removed all individuals")
   }
+  
+  
+  # Calculate parameters 
+  # ++++++++++++++++++++
   
   # Create output data frame
   out <- aggregate(list(nInd = x$specie), by = list(c1 = x[ ,filter]), FUN = length)
@@ -135,7 +149,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   
   # Convert diameter measure from centimeters to meters
   x$diameter <- x$diameter / 100
-  out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum(basalArea(x))})$x
+  out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum((pi * (x^2)) / 4)})$x
   
   if(filter != "plot"){
     out[ ,"AbsDens"] <- out$nInd / area
