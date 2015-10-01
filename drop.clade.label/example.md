@@ -37,7 +37,7 @@ plot(tr_col)
 nodelabels(tr_col$node.label, cex=0.8, adj = 0)
 ```
 
-![](ex_myrtales_tree-1.png) 
+![](example_figs/ex_myrtales_tree-1.png) 
 
 Note that the Myrtales tree has name of each node (genus, families and groups). To plot this tree we need delete nodes with single nodes (with a single descendant), then we used `collapse.singles` function. But, we use this only to plot. Here I want the complete tree, without collapsed nodes.
 
@@ -53,7 +53,7 @@ plot(tr_dr1)
 nodelabels(tr_dr1$node.label, cex=0.8, adj = 0)
 ```
 
-![](ex_drop_myrtaceae-1.png) 
+![](example_figs/ex_drop_myrtaceae-1.png) 
 
 Note that `drop.clade` removed *myrtaceae* node from tree, but the node name was lost (tip without name). If we want to use this function for bind resolved Myrtaceae clade to the tree, we do not know where to bind it back.
 
@@ -69,7 +69,7 @@ plot(tr_dr2)
 nodelabels(tr_dr2$node.label, cex=0.8, adj = 0)
 ```
 
-![](ex_drop_myrtaceae_correct-1.png) 
+![](example_figs/ex_drop_myrtaceae_correct-1.png) 
 
 Note now that node name for Myrtaceae node (*myrtaceae*) was kept.
 
@@ -85,7 +85,7 @@ plot(tr_dr3)
 nodelabels(tr_dr3$node.label, cex=0.8, adj = 0)
 ```
 
-![](ex_drop_vochysiaceae-1.png) 
+![](example_figs/ex_drop_vochysiaceae-1.png) 
 
 Note that `drop.clade` do not removed all tips from *vochysiaceae* node (*vochysia* still was on the tree), because of polytomies, and Vochysiaceae node name was lost and substituted by internal node not dropped.
 
@@ -101,4 +101,4 @@ plot(tr_dr4)
 nodelabels(tr_dr4$node.label, cex=0.8, adj = 0)
 ```
 
-![](ex_drop_vochysiaceae_correct-1.png) 
+![](example_figs/ex_drop_vochysiaceae_correct-1.png) 
