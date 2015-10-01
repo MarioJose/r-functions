@@ -1,5 +1,5 @@
 
-# Removing node keeping node name
+# Removing node and keeping node name
 
 The function `drop.clade` from `phytools` package help us to remove clades from a tree. This function is very useful when you handling a tree to resolve some node polytomies. For instance, you what drop a specific family to resolve it and then bind resolved family to the tree. The `drop.clade` do not preserve node names and it will be complicated if you want bind a extracted clade again to the tree. For this, the functions `drop.clade.label` and `nodedepth` (for internal use) help to exclude node from tree keeping nodes names.
 
