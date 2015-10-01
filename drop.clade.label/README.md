@@ -22,6 +22,9 @@ All tips from node will be deleted and node label will be a tip on tree. This fu
 Function: `nodedepth`.
 Packages: `ape`, `phytools`.
 
+### Example
+See example [here](example.md).
+
 ***
 
 # nodedepth
