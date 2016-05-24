@@ -1,6 +1,11 @@
-phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL, incDead = TRUE, nmDead = "Dead"){
+# Function for calculate phytosociological table
+# Version: 1.2.0
+# https://github.com/MarioJose/r-functions/tree/master/phyto
+
+phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL, incDead = TRUE, nmDead = "Dead", diversity = TRUE, evenness = TRUE){
   # x must be data frame with: plot, family, specie, diameter, (height).
-  #   It must be in this order, but not necessarily with this names. Height is optional
+  #   It must be in this order, but not necessarily with this names. Height is
+  #   optional
   
   # Checking input
   # ++++++++++++++
@@ -37,40 +42,74 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     }
   }
   
+  # Convert family and species column to character
+  x[ ,2] <- as.character(x[ ,2])
+  x[ ,3] <- as.character(x[ ,3])
+  
   # Remove dead individuals (column 'specie')
   if(!incDead){
-    x <- x[-grep(nmDead , x[ ,3]), ]
+    didx <- grep(nmDead , x[ ,3])
+    x <- x[-didx, ]
+    print(paste("Removed", length(didx), "individual named as", nmDead))
   }
 
 
   # Functions
   # +++++++++
   
-  # Split multiple diameter or height and return diameter of total basal area of each
-  #   individual or mean height of each individual.
-  splitMultiple <- function(dt, m){
-    out <- c()
-    for(i in 1:length(dt)){
-      if(!is.numeric(dt[i])){
-        tmp <- as.numeric(unlist(strsplit(dt[i] , "+", TRUE)))
-      } else {
-        tmp <- dt[i]
-      }
-      if(m == "d"){
-        # Return diameter of total basal area
-        out[i] <- sqrt(4 * sum((pi * (tmp ^ 2)) / 4) / pi)
-      }
-      if(m == "c"){
-        # Convert circunference and return diameter of total basal area
-        out[i] <- sqrt(4 * sum((tmp ^ 2) / (4 * pi)) / pi)
-      }
-      if(m == "h") {
-        out[i] <- mean(tmp)
-      }
-    }
+  # Split multiple diameter or height and return diameter of total basal area of
+  # each individual or mean height of each individual
+  splitMultiple <- function(x, m){
+    
+    if(!is.numeric(x)) tmp <- as.numeric(unlist(strsplit(x , "+", TRUE)))
+    else tmp <- x
+
+    # Return diameter of total basal area
+    if(m == "d") out <- sqrt(4 * sum((pi * (tmp ^ 2)) / 4) / pi)
+
+    # Convert circunference and return diameter of total basal area
+    if(m == "c") out <- sqrt(4 * sum((tmp ^ 2) / (4 * pi)) / pi)
+
+    # Return mean of height
+    if(m == "h") out <- mean(tmp)
+    
     return(out)
   }
   
+  # Shannon and Simpson diversity index
+  shannon_fn <- function(x){
+    p <- x / sum(x)
+    H <- -sum(p * log(p))    
+    # Variance as Hutcheson (1970)
+    varH <- ((sum(p * (log(p)^2)) - sum(p * log(p))^2) / sum(x)) + ((length(x) - 1) / (2 * (length(x)^2)))
+    
+    return(c(H = H, varH = varH))
+  }
+  
+  simpson_fn <- function(x, var = FALSE){
+    # As Simpson (1949)
+    N <- sum(x)
+    p <- x / N
+    D <- sum(x * (x - 1)) / (N * (N - 1))
+    varD <- ( 4*N*(N - 1)*(N - 2)*sum(p^3) + 2*N*(N - 1)*sum(p^2) - 2*N*(N - 1)*(2*N - 3)*(sum(p^2)^2) ) / (N*(N - 1))^2
+    # if N be very large, approximately 
+    #varD <- (4/N) * ( (sum(p^3)) - (sum(p^2))^2 );
+    
+    return(c(D = D, varD = varD))
+  }
+  
+  # Evar and E1/D evenness index
+  evenness_fn <- function(x){
+    # As Smith & Wilson (1996)
+
+    mulog <- sum(log(x)) / length(x)
+    # 0 = minimum eveness
+    Evar <- 1 - (2 / pi) * atan( sum((log(x) - mulog)^2) / length(x) )
+    E1D <- (1 / simpson_fn(x)[["D"]]) / length(x)
+    
+    return(c(Evar = Evar, E1D = E1D))
+  }
+
   
   # Checking data
   # +++++++++++++
@@ -79,34 +118,29 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   colnames(x) <- c("plot", "family", "specie", "diameter", "height")[1:dim(x)[2]]
   
   # Create column with genus
-  x$genus <- sapply(strsplit(as.character(x$specie), " "), function(x) x[1])
+  x$genus <- sapply(x$specie, function(x) strsplit(x, " ")[[1]][1])
   
   # Order data frame
   x <- x[, c(1:2, dim(x)[2], 3:(dim(x)[2] - 1))] 
   
-  # Standardize measure to diameter. Split multiples measures and return diameter 
-  #   of total basal area to individual
-  if(is.character(x$diameter) | is.factor(x$diameter)){
-    x$diameter <- splitMultiple(as.character(x$diameter), m = measure)
-  } else {
-    if(measure == "c"){
-      x$diameter <- x$diameter / pi
-    }
-  }
+  # Standardize measure to diameter. Split multiples measures and return 
+  # diameter of total basal area to individual
+  if(is.character(x$diameter) | is.factor(x$diameter))
+    x$diameter <- sapply(as.character(x$diameter), splitMultiple, m = measure)
+  else if(measure == "c") x$diameter <- x$diameter / pi
   
-  # Standardize height. Split multiples measures and return mean of height to individual
-  if(dim(x)[2] == 6){
-    if(is.character(x$height) | is.factor(x$height)){
-      x$height <- splitMultiple(as.character(x$height), m = "h")
-    }
-  }
+  # Standardize height. Split multiples measures and return mean of height to
+  #   individual
+  if(dim(x)[2] == 6)
+    if(is.character(x$height) | is.factor(x$height))
+      x$height <- sapply(as.character(x$height), splitMultiple, m = "h")
   
   # Filter by inclusion criteria
-  x <- x[x$diameter >= criteria, ]
+  cidx <- x$diameter >= criteria
+  x <- x[cidx, ]
   
-  if(dim(x)[1] < 1){
-    stop("Your criteria removed all individuals")
-  }
+  if(dim(x)[1] < 1) stop("Your criteria removed all individuals")
+  else print(paste("Removed", length(cidx) - sum(cidx), "individual(s) by criteria", criteria))
   
   
   # Calculate parameters 
@@ -132,6 +166,15 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     
     # Number of species per plot
     out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$plot), FUN = function(x){length(unique(x))})$x
+    
+    if(diversity){
+      out[ ,c("H", "varH")] <- aggregate(x$specie, by = list(x$plot), FUN = function(x){shannon_fn(table(as.character(x)))})[[2]]
+      out[ ,c("D", "varD")] <- aggregate(x$specie, by = list(x$plot), FUN = function(x){simpson_fn(table(as.character(x)))})[[2]]
+    }
+    
+    if(evenness)
+      out[ ,c("Evar","E1D")] <- aggregate(x$specie, by = list(x$plot), FUN = function(x){evenness_fn(table(as.character(x)))})[[2]]
+    
   }
   
   if(filter == "family"){
