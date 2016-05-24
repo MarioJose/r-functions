@@ -1,0 +1,20 @@
+1.2.0 (2016-05-24
+* Including diversity and evenness index calculation
+* Print information of number of individuals removed when 'incDead' argument is FALSE 
+* Print information when criteria > 0 is assigned
+* Code improvement
+
+1.1.1 (2015-09-18)
+* Update description file
+* Fix bug: converting circumference to diameter when column is character
+* Include 'tBasalArea' to output when filter is 'plot'
+* Correct data type error when data is factor
+
+1.1.0 (2015-05-18)
+* Update 'filter' argument to accept filter name instead number
+* Add filter by genus
+* Updates on description file
+* Change to MIT licence
+
+1.0.0 (2014-08-28)
+* Initial release on GitHub
