@@ -100,7 +100,7 @@ If filter by "family" , "genus" or "specie"
 
 * `nSpecies`: Number of species (if filter by family or genus).
 
-* `tBasalArea`: Total Basal Area in m<sup>2</sup>/.
+* `tBasalArea`: Total Basal Area in m<sup>2</sup>.
 
 * `AbsDens`: Absolute Density (individuals/area unit) estimate number of
   individuals of a group (family, genus or specie) per unit of area.
