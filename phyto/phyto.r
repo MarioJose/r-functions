@@ -35,10 +35,10 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
   }
 
   if(is.null(measure)){
-    stop("You must inform the measure: \"d\" = diameter; \"c\" = circunference")
+    stop("You must inform the measure: \"d\" = diameter; \"c\" = circumference")
   } else {
     if(!(measure %in% c("d","c"))){
-      stop("You must inform one of the follow option to measure: \"d\" = diameter; \"c\"c = circunferente")
+      stop("You must inform one of the follow option to measure: \"d\" = diameter; \"c\"c = circumference")
     }
   }
   
@@ -64,10 +64,15 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     if(!is.numeric(x)) tmp <- as.numeric(unlist(strsplit(x , "+", TRUE)))
     else tmp <- x
 
+    # Expression used in conversion
+    # area = (pi*diameter^2)/4
+    # area = (circumference^2)/(4*pi)
+    # diameter = sqrt((4*area)/pi)
+    
     # Return diameter of total basal area
     if(m == "d") out <- sqrt(4 * sum((pi * (tmp ^ 2)) / 4) / pi)
 
-    # Convert circunference and return diameter of total basal area
+    # Convert circumference and return diameter of total basal area
     if(m == "c") out <- sqrt(4 * sum((tmp ^ 2) / (4 * pi)) / pi)
 
     # Return mean of height
@@ -190,7 +195,7 @@ phyto <- function(x, filter = NULL, area = NULL, criteria = NULL, measure = NULL
     out[ ,"nSpecies"] <- aggregate(x$specie, by = list(x$genus), FUN = function(x){length(unique(x))})$x
   }
   
-  # Convert diameter measure from centimeters to meters
+  # Convert diameter measure from centimetres to meters
   x$diameter <- x$diameter / 100
   out[ ,"tBasalArea"] <- aggregate(x$diameter, by = list(x[ ,filter]), FUN = function(x){sum((pi * (x^2)) / 4)})$x
   
