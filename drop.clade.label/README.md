@@ -16,10 +16,9 @@ Tree of class 'phylo' with defined node dropped.
 
 ### Details
 
-All tips from node will be deleted and node label will be a tip on tree. This function removes tips from node prioritizing exclusion to deep nodes for do not lose node label when root has polytomies.
+All tips from node will be deleted and node label will be a tip on tree. This function is independent of `extract.clade` or `drop.tip` functions of 'ape' package. It can handle 'tree' with or without singletons.
 
 ### Require
-Function: `nodedepth`.
 Packages: `ape`, `phytools`.
 
 ### Example
@@ -29,7 +28,7 @@ See example [here](example.md).
 
 # nodedepth
 
-## Node depth from specified node to root.
+## Node depth to root 'tree'.
 
 ### Usage
 
@@ -41,4 +40,27 @@ See example [here](example.md).
 
 ### Details
 
-Counting number of nodes from specified node, that maybe a tip number, to the root of tree.
+Count number of nodes of each 'node' to root of 'tree'.
+
+### Example
+
+```r
+tree <- read.newick(text = '((((a,b)AB,c)ABC,(d,e,f)DEF)G,h)I;')
+
+par(mar=c(1,1,1,1))
+
+plot(tree)
+
+nodelabels()
+```
+
+![](example_figs/nodedepth.png)
+
+```r
+nodedepth(tree, 11)
+```
+
+```
+3
+```
+
