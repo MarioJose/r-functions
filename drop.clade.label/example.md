@@ -1,16 +1,16 @@
 
-# Removing node and keeping node name
+# Removing node, but keeping node name
 
-The function `drop.clade` from `phytools` package help us to remove clades from a tree. This function is very useful when you handling a tree to resolve some node polytomies. For instance, you what drop a specific family to resolve it and then bind resolved family to the tree. The `drop.clade` do not preserve node names and it will be complicated if you want bind a extracted clade again to the tree. For this, the functions `drop.clade.label` and `nodedepth` (for internal use) help to exclude node from tree keeping nodes names.
+The function `drop.clade` from `phytools` package help us to remove clades from a tree. This function is very useful when you handling a tree to resolve some node polytomies. For instance, you want drop a specific family to resolve it and then bind resolved family to the tree. The `drop.clade` do not preserve node name and it will be complicated if you want bind a extracted clade again to the tree. For this, the functions `drop.clade.label` helps to exclude node from tree keeping node name.
 
-Here I will show the problem of function `drop.clade` with node names and how to solve this with the function `drop.clade.label`.
+Here I will show the problem of function `drop.clade` with node name and how to solve this with the function `drop.clade.label`.
 
-First we need to load library and the function `drop.clade.label` (and `nodedepth`).
+First, we need to load library and the function `drop.clade.label`.
 
 
 ```r
 # Load library
-library(phytools) # version 0.5.0
+library(phytools) # version 0.6.0
 ```
 
 ```
@@ -19,9 +19,8 @@ library(phytools) # version 0.5.0
 ```
 
 ```r
-# Load functions
+# Load function
 source("drop.clade.label.r")
-source("nodedepth.r")
 ```
 
 The Myrtales tree bellow will be used as example.
@@ -33,15 +32,15 @@ tr <- read.newick(text="(((((vochysiaceae_sp1,vochysiaceae_sp2,(vochysia_cinnamo
 tr_col <- collapse.singles(tr)
 
 par(mar=c(1,1,1,1))
-plot(tr_col)
-nodelabels(tr_col$node.label, cex=0.8, adj = 0)
+plot(tr_col, node.depth = 2)
+nodelabels(tr_col$node.label, cex=0.8, adj = 0.5)
 ```
 
 ![](example_figs/ex_myrtales_tree-1.png) 
 
-Note that the Myrtales tree has name of each node (genus, families and groups). To plot this tree we need delete nodes with single nodes (with a single descendant), then we used `collapse.singles` function. But, we use this only to plot. Here I want the complete tree, without collapsed nodes.
+Note that the Myrtales tree has a name for each node (genus, families and groups). To plot this tree we need delete nodes with single nodes (with a single descendant), then we used `collapse.singles` function. But, we use this only to plot. Here I want the complete tree, without collapsed nodes.
 
-To drop Myrtaceae clade from the tree we need inform to `drop.clade` function the names of the tips of the clade that we want to delete. The function `extract.clade` return the tree of informed node, then we can to use tips names of this tree in `drop.clade` function.
+To drop Myrtaceae clade from the tree, we need inform to `drop.clade` function the names of the tips from clade that we want to delete. The function `extract.clade` return the tree of informed node, then we can to use tips names of this tree in `drop.clade` function.
 
 
 ```r
@@ -49,8 +48,8 @@ To drop Myrtaceae clade from the tree we need inform to `drop.clade` function th
 tr_dr1 <- drop.clade(tr, extract.clade(tr, "myrtaceae")$tip.label)
 
 par(mar=c(1,1,1,1))
-plot(tr_dr1)
-nodelabels(tr_dr1$node.label, cex=0.8, adj = 0)
+plot(tr_dr1, node.depth = 2)
+nodelabels(tr_dr1$node.label, cex=0.8, adj = 0.5)
 ```
 
 ![](example_figs/ex_drop_myrtaceae-1.png) 
@@ -65,13 +64,13 @@ We can resolve this using `drop.clade.label` function.
 tr_dr2 <- drop.clade.label(tr, "myrtaceae")
 
 par(mar=c(1,1,1,1))
-plot(tr_dr2)
-nodelabels(tr_dr2$node.label, cex=0.8, adj = 0)
+plot(collapse.singles(tr_dr2), node.depth = 2)
+nodelabels(collapse.singles(tr_dr2)$node.label, cex=0.8, adj = 0.5)
 ```
 
 ![](example_figs/ex_drop_myrtaceae_correct-1.png) 
 
-Note now that node name for Myrtaceae node (*myrtaceae*) was kept.
+Note that node name for Myrtaceae node (*myrtaceae*) was kept.
 
 Another problem happen when we drop node with polytomies at root node using `drop.clade`. The *vochysiaceae* node (Vochysiaceae family) at Myrtales tree show some polytomies at its root (*vochysiaceae sp1* and *vochysiaceae sp2*). See what happens when we drop *vochysiaceae* node.
 
@@ -81,8 +80,8 @@ Another problem happen when we drop node with polytomies at root node using `dro
 tr_dr3 <- drop.clade(tr, extract.clade(tr, "vochysiaceae")$tip.label)
 
 par(mar=c(1,1,1,1))
-plot(tr_dr3)
-nodelabels(tr_dr3$node.label, cex=0.8, adj = 0)
+plot(tr_dr3, node.depth = 2)
+nodelabels(tr_dr3$node.label, cex=0.8, adj = 0.5)
 ```
 
 ![](example_figs/ex_drop_vochysiaceae-1.png) 
@@ -97,8 +96,10 @@ Using `drop.clade.label`, all tips from *vochysiaceae* node are removed and node
 tr_dr4 <- drop.clade.label(tr, "vochysiaceae")
 
 par(mar=c(1,1,1,1))
-plot(tr_dr4)
-nodelabels(tr_dr4$node.label, cex=0.8, adj = 0)
+plot(collapse.singles(tr_dr4), node.depth = 2)
+nodelabels(collapse.singles(tr_dr4)$node.label, cex=0.8, adj = 0.5)
 ```
 
 ![](example_figs/ex_drop_vochysiaceae_correct-1.png) 
+
+The `drop.clade.label` handle tree with or without singletons. If tree has singletons, the tree returned will not exclude it.
