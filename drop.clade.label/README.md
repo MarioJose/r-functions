@@ -16,7 +16,7 @@ Tree of class 'phylo' with defined node dropped.
 
 ### Details
 
-All tips from node will be deleted and node label will be a tip on tree. This function is independent of `extract.clade` or `drop.tip` functions of 'ape' package. It can handle 'tree' with or without singletons.
+All tips from node will be deleted and node label will be a tip on tree. This function is independent of `drop.tip` function of 'ape' package. It can handle 'tree' with or without singletons.
 
 ### Require
 Packages: `ape`, `phytools`.
@@ -48,9 +48,7 @@ Count number of nodes of each 'node' to root of 'tree'.
 tree <- read.newick(text = '((((a,b)AB,c)ABC,(d,e,f)DEF)G,h)I;')
 
 par(mar=c(1,1,1,1))
-
 plot(tree)
-
 nodelabels()
 ```
 
