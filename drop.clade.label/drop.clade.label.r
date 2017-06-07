@@ -1,46 +1,74 @@
 drop.clade.label <- function(tree, node){
-  # Removes tips from node prioritizing exclusion to deep nodes.
+  # Remove all tips from 'node', keeping 'node' label as a tip
   
-  if(!is.vector(node, mode = "character"))
-    stop("'node' parameter must be a character vector")
+  if(!is.vector(node, mode = "character") | length(node) > 1)
+    stop("'node' parameter must be a character vector of length 1")
   
   if(sum(node %in% tree$node.label) == 0)
     stop("tree has not node labels defined in 'node' parameter")
   
-  for(i in node){
-    # Location of node in tree. Valid only before drop
-    nn <- which(tree$node.label %in% i)
-    
-    tree_node <- extract.clade(tree, i)
-    tipn <- length(tree_node$tip.label)
-    dt <- aggregate(list(edge=tree_node$edge[ ,1]), list(node=tree_node$edge[ ,1]), length)
-    
-    # Depth to node
-    dt$depth <- nodedepth(tree_node, dt$node)
-    
-    dt$label <- tree_node$node.label[dt$node - tipn]
-    dt <- dt[dt$edge > 1 & dt$depth > 0, ]
-    dt <- dt[order(dt$depth, dt$edge, decreasing = TRUE), ]
-    
-    # Names nodes with no label
-    if(sum(dt$label == "") > 0){
-      idx <- dt$label == ""
-      dt$label[idx] <- paste(paste(i, "Node", sep=""), dt$node[idx], sep="")
-      
-      # Names nodes with no label from defined node on tree
-      tree$node.label[(dt$node[idx] - tipn) + (nn - 1)] <- dt$label[idx]
-    }
-    
-    for(j in dt$label){
-      tree <- drop.tip(tree, extract.clade(tree, j)$tip.label, trim.internal = FALSE)
-    }
-    
-    # Drop final tips
-    tree <- drop.tip(tree, extract.clade(tree, i)$tip.label, trim.internal = FALSE)
-    if(sum(i %in% tree$node.label) > 0){
-      while(sum(i %in% tree$node.label) > 0)
-        tree <- drop.tip(tree, extract.clade(tree, i)$tip.label, trim.internal = FALSE)
-    }
+  if(!is.rooted(tree))
+    stop("tree must be rooted")
+  
+  if(!is.null(tree$edge.length))
+    stop("tree must not have edge length")
+  
+  # Reorder tree
+  tree <- reorder(tree)
+  
+  # number of tips
+  not <- length(tree$tip.label)
+  # node number
+  nn <- which(tree$node.label %in% node) + not
+  
+  # 'node' tree extracted
+  extr <- extract.clade(tree, node)
+  # number of tips of extracted 'node' tree
+  extrnot <- length(extr$tip.label)
+
+  # new number of tips
+  nnot <- not - extrnot
+  
+  edge <- tree$edge
+  
+  # nodes descendants
+  nd <- tmp <- edge[edge[ ,1] %in% nn , 2]
+  while(length(tmp) > 0){
+    tmp <- edge[edge[ ,1] %in% tmp , 2]
+    if(length(tmp) > 0) nd <- c(nd, tmp)
   }
+  # tips desdendants
+  td <- nd[nd <= not]
+  # only nodes descendats
+  nd <- nd[nd > not] 
+  
+  # New tips positions
+  newt <- matrix(NA, nrow = not, ncol = 2, 
+                 dimnames = list(1:not, c('tips', 'new')))
+  newt[ ,1] <- 1:not
+  newt <- newt[!(newt[ ,1] %in% td), ]
+  newt[ ,2] <- rank(newt[ ,1])
+  
+  # New nodes positions
+  newn <- matrix(NA, nrow = tree$Nnode, ncol = 2, 
+                 dimnames = list(1:tree$Nnode, c('nodes', 'new')))
+  newn [ ,1] <- 1:tree$Nnode + not
+  newn <- newn[!(newn[ ,1] %in% c(nd, nn)), ]
+  # 'nnot' plus 1L to new tip 'node'
+  newn [ ,2] <- rank(newn[ ,1]) + nnot + 1L
+  
+  # Reference table to new nodes positions
+  refedge <- rbind(newt, newn, matrix(c(nn, (nnot + 1)), nrow = 1))
+  
+  newedge <- edge[!(edge[ ,1] %in% c(nd, nn)), ]
+  newedge[ ,1] <- refedge[match(newedge[ ,1], refedge[ ,1]) ,2]
+  newedge[ ,2] <- refedge[match(newedge[ ,2], refedge[ ,1]) ,2]
+
+  # Update tree  
+  tree$edge <- newedge
+  tree$tip.label <- c(tree$tip.label[newt[ ,1]], node)
+  tree$node.label <- tree$node.label[newn[ ,1] - not]
+  tree$Nnode <- length(tree$node.label)
+  
   return(tree)
 }
