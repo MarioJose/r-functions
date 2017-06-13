@@ -22,7 +22,7 @@ drop.clade.label <- function(tree, node){
   nn <- which(tree$node.label %in% node) + not
   
   # 'node' tree extracted
-  extr <- extract.clade(tree, node)
+  extr <- extract.clade.label(tree, node)
   # number of tips of extracted 'node' tree
   extrnot <- length(extr$tip.label)
 
