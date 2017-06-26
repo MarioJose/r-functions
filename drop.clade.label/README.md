@@ -2,17 +2,17 @@
 
 This repository started to share the `drop.clade.label` function, that is a solution to a problem found using some R packages. But it expand to others function to solve other problems, mainly using tree with singletons nodes. Follow a summary of functions:
 
-* [`collapse.unlabelled.singletons`](#collapse.unlabelled.singletons): Collapse all unlabelled singles nodes, preserving singletons labelled nodes;
+* [`collapse.unlabelled.singletons`](#collapseunlabelledsingletons): Collapse all unlabelled singles nodes, preserving singletons labelled nodes;
 
-* [`drop.clade.label`](#drop.clade.label): Drop a clade from the tree using node label. Return a tree with the node dropped and with node label as a tip in tree;
+* [`drop.clade.label`](#dropcladelabel): Drop a clade from the tree using node label. Return a tree with the node dropped and with node label as a tip in tree;
 
-* [`drop.tip.label`](#drop.tip.label): Drop specifics tips from a tree;
+* [`drop.tip.label`](#droptiplabel): Drop specifics tips from a tree;
 
-* [`extract.clade.label`](#extract.clade.label): Extract a clade from a tree using node label. Return a tree with node label as a root of the tree;
+* [`extract.clade.label`](#extractcladelabel): Extract a clade from a tree using node label. Return a tree with node label as a root of the tree;
 
-* [`get.ancestry.strucure`](#get.ancestry.structure): Get the ancestry nodes of a node. Return a list with a vector with ancestry nodes that have one descendant and a matrix with node number and the ancestry node that have more than one descendants;
+* [`get.ancestry.strucure`](#getancestrystructure): Get the ancestry nodes of a node. Return a list with a vector with ancestry nodes that have one descendant and a matrix with node number and the ancestry node that have more than one descendants;
 
-* [`get.descendants`](#get.descendants): Get descendants nodes of a node. Return a list with a vector with descendants tips a other vector with descendants nodes;
+* [`get.descendants`](#getdescendants): Get descendants nodes of a node. Return a list with a vector with descendants tips a other vector with descendants nodes;
 
 * [`nodedepth`](#nodedepth): Get number of nodes from a node to the root. Return a vector with the number of nodes.
 
