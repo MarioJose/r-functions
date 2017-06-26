@@ -48,7 +48,9 @@ extract.clade.label <- function(tree, node){
                  dimnames = list(1:tree$Nnode, c('nodes', 'new')))
   newn [ ,1] <- 1:tree$Nnode + not
   newn <- newn[newn[ ,1] %in% c(nd, nn), ]
-  newn [ ,2] <- rank(newn[ ,1]) + length(td)
+  if(!is.matrix(newn))
+    newn <- matrix(newn, nrow = 1, dimnames = list(1, names(newn)))
+  newn[ ,2] <- rank(newn[ ,1]) + length(td)
   
   # Reference table to new nodes positions
   refedge <- rbind(newt, newn)
