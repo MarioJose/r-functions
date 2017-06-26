@@ -13,6 +13,10 @@ drop.clade.label <- function(tree, node){
   if(!is.null(tree$edge.length))
     stop("tree must not have edge length")
   
+  # Solve bug reading newick in phytools 0.6
+  if(tree$Nnode > length(tree$node.label))
+    tree$node.label <- c(tree$node.label, rep('', tree$Nnode - length(tree$node.label)))
+  
   # Reorder tree
   tree <- reorder(tree)
   
